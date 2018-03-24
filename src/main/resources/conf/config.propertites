@@ -1,0 +1,4 @@
+driver=com.mysql.jdbc.Driver
+url=jdbc:mysql://47.94.246.83:3306/guns
+username=root
+password=J*Zds@90
