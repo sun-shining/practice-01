@@ -21,7 +21,7 @@ import java.time.LocalTime;
  * ServerSocketChannel
  * <p>
  * 3。获取通道  FileInputStream/FileOutputStream/RandomAccessFile/   Socket/ServerSocket/DatagramSocket .getChannel()
- * jdk 1.7后有个静态方法， open（）
+ * jdk 1.7后有个静态方法， FileChannel.open（）
  * Files 工具类， newByteChannel()
  */
 public class TestChannel {
