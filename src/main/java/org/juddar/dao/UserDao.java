@@ -7,4 +7,6 @@ import java.util.List;
 public interface UserDao {
 
     public List<User> selectUserList();
+
+    public User updateByID(User user);
 }

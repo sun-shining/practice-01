@@ -26,6 +26,6 @@
 
 
     <mappers>
-        <mapper resource="conf/UserMapper.xml"/>
+        <mapper resource="conf/UserMapper.xml" />
     </mappers>
 </configuration>

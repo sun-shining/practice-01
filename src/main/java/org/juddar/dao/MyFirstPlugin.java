@@ -9,6 +9,7 @@ import org.apache.ibatis.plugin.*;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
+import java.lang.reflect.Field;
 import java.util.Properties;
 
 @Intercepts({
@@ -35,18 +36,33 @@ public class MyFirstPlugin implements Interceptor {
             replace = sql.replace(";", " where id = 1");
         }
 
+        setFieldByReflect(boundSql, "sql", replace);
 
-        BoundSql boundSql1 = new BoundSql(mappedStatement.getConfiguration(), replace, boundSql.getParameterMappings(), boundSql.getParameterObject());
-        MappedStatement mappedStatement1 = copyFromMappedStatement(mappedStatement, new BoundSqlSqlSource(boundSql1));
-        for (ParameterMapping mapping : boundSql.getParameterMappings()) {
-            String prop = mapping.getProperty();
-            if (boundSql.hasAdditionalParameter(prop)) {
-                boundSql1.setAdditionalParameter(prop, boundSql.getAdditionalParameter(prop));
-            }
-        }
+        /* BoundSql中未提供针对sql属性的set方法，可以通过反射设置属性新的值，这样就不用重新创建BoudSql对象。也不用将BounldSql中
+        的其他属性设置回新的BoundSql对象中*/
+//        BoundSql boundSql1 = new BoundSql(mappedStatement.getConfiguration(), replace, boundSql.getParameterMappings(), boundSql.getParameterObject());
+        MappedStatement mappedStatement1 = copyFromMappedStatement(mappedStatement, new BoundSqlSqlSource(boundSql));
+//        for (ParameterMapping mapping : boundSql.getParameterMappings()) {
+//            String prop = mapping.getProperty();
+//            if (boundSql.hasAdditionalParameter(prop)) {
+//                boundSql1.setAdditionalParameter(prop, boundSql.getAdditionalParameter(prop));
+//            }
+//        }
         queryArgs[MAPPED_STATEMENT_INDEX] = mappedStatement1;
         Object proceed = invocation.proceed();
         return proceed;
+    }
+
+    private void setFieldByReflect(BoundSql boundSql, String sql, String replace) {
+        try {
+            Field sqlField = boundSql.getClass().getDeclaredField(sql);
+            sqlField.setAccessible(true);
+            sqlField.set(boundSql, replace);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     public static class BoundSqlSqlSource implements SqlSource {

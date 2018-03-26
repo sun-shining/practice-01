@@ -12,4 +12,8 @@
     <select id="selectUserList" resultType="User">
         select * from USER;
     </select>
+
+    <update id="updateByID"  statementType="PREPARED">
+      UPDATE USER SET birthday = #{birthday} WHERE id=#{id}
+    </update>
 </mapper>
